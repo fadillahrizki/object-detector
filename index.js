@@ -68,6 +68,7 @@ async function detect(img) {
         percentage: true,
     });
     click_button.textContent = 'Capture';
+    video.style.display = 'block'
     output.forEach(renderBox);
 }
 
