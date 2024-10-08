@@ -68,7 +68,7 @@ async function detect(img) {
   loader.style.display = "block";
   readyTo.style.display = "none";
 
-  const output = await detector(img.src, {
+  let output = await detector(img.src, {
     threshold: 0.5,
     percentage: true,
   });
@@ -77,6 +77,7 @@ async function detect(img) {
 
   loader.style.display = "none";
   readyTo.style.display = "flex";
+  output = output.filter(out=>out.score>=0.8)
   output.forEach(renderBox);
 }
 
