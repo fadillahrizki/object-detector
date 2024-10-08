@@ -16,6 +16,7 @@ let tryagain_button = document.querySelector("#tryagain-btn");
 let canvas = document.querySelector("#canvas");
 let loading = document.querySelector("#loading");
 let readyTo = document.querySelector("#ready-to");
+let loader = document.querySelector(".loader");
 
 let stream = await navigator.mediaDevices.getUserMedia({
   video: true,
@@ -37,42 +38,45 @@ click_button.addEventListener("click", function () {
   const image = document.createElement("img");
   image.src = image_data_url;
   imageContainer.appendChild(image);
-  detect(image_data_url);
+  detect(image);
 });
 
 fileUpload.addEventListener("change", function (e) {
-  const file = e.target.files[0];
-  if (!file) {
-    return;
-  }
+    const file = e.target.files[0];
+    if (!file) {
+        return;
+    }
 
-  startAnalyze(file);
+    video.style.display = "none";
+
+    const reader = new FileReader();
+
+    // Set up a callback when the file is loaded
+    reader.onload = function (e2) {
+        imageContainer.innerHTML = '';
+        const image = document.createElement('img');
+        image.src = e2.target.result;
+        imageContainer.appendChild(image);
+        detect(image);
+    };
+    reader.readAsDataURL(file);
 });
-
-function startAnalyze(file) {
-  const reader = new FileReader();
-
-  // Set up a callback when the file is loaded
-  reader.onload = function (e2) {
-    imageContainer.innerHTML = "";
-    const image = document.createElement("img");
-    image.src = e2.target.result;
-    imageContainer.appendChild(image);
-    detect(image);
-  };
-  reader.readAsDataURL(file);
-}
 
 // Detect objects in the image
 async function detect(img) {
   click_button.textContent = "Analysing...";
-  click_button.disabled = true;
-  const output = await detector(img, {
+  loader.style.display = "block";
+  readyTo.style.display = "none";
+
+  const output = await detector(img.src, {
     threshold: 0.5,
     percentage: true,
   });
   tryagain_button.style.display = "block";
   click_button.style.display = "none";
+
+  loader.style.display = "none";
+  readyTo.style.display = "flex";
   output.forEach(renderBox);
 }
 
