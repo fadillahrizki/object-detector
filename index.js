@@ -78,11 +78,12 @@ async function detect(img) {
   loader.style.display = "none";
   readyTo.style.display = "flex";
   output = output.filter(out=>out.score>=0.8)
+  console.log(output);
   output.forEach(renderBox);
 }
 
 // Render a bounding box and label on the image
-function renderBox({ box, label }) {
+function renderBox({ box, label, score}) {
   const { xmax, xmin, ymax, ymin } = box;
 
   // Generate a random color for the box
@@ -105,7 +106,7 @@ function renderBox({ box, label }) {
 
   // Draw label
   const labelElement = document.createElement("span");
-  labelElement.textContent = label;
+  labelElement.textContent = label + ` (${(score*100).toFixed(2)}%)`;
   labelElement.className = "bounding-box-label";
   labelElement.style.backgroundColor = color;
 
