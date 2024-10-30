@@ -63,6 +63,7 @@ fileUpload.addEventListener("change", function (e) {
 });
 
 // Detect objects in the image
+// Detect objects in the image
 async function detect(img) {
   click_button.textContent = "Analysing...";
   loader.style.display = "block";
@@ -77,10 +78,36 @@ async function detect(img) {
 
   loader.style.display = "none";
   readyTo.style.display = "flex";
-  output = output.filter(out=>out.score>=0.8)
+
+  // Filter output to include only items with a score >= 0.8
+  output = output.filter(out => out.score >= 0.8);
   console.log(output);
   output.forEach(renderBox);
+
+  // Create an object to count occurrences of each label
+  const labelCounts = {};
+
+  output.forEach(item => {
+    const label = item.label;
+    if (labelCounts[label]) {
+      labelCounts[label]++;
+    } else {
+      labelCounts[label] = 1;
+    }
+  });
+
+  // Display each label with its count in the #result div
+  const resultDiv = document.getElementById("result");
+  resultDiv.innerHTML = ""; // Clear previous results
+
+  for (const [label, count] of Object.entries(labelCounts)) {
+    const resultText = `${label}: ${count}`;
+    const div = document.createElement("div");
+    div.textContent = resultText;
+    resultDiv.appendChild(div);
+  }
 }
+
 
 // Render a bounding box and label on the image
 function renderBox({ box, label, score}) {
