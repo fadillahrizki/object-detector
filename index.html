@@ -15,44 +15,174 @@
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
+    <script
+      src="https://kit.fontawesome.com/f9e187ccca.js"
+      crossorigin="anonymous"
+    ></script>
   </head>
 
   <body>
     <main class="container py-4">
-      <div class="row">
-        <div class="col-lg-8 col-sm-12">
-          <video id="video" width="100%" class="pt-3" autoplay></video>
-          <div id="image-container"></div>
-          <canvas id="canvas" height="240" style="display: none"></canvas>
-          <div id="loading" class="text-center">Loading model...</div>
+      <div class="header mb-5">
+        <div class="h1 text-center text-primary fw-bold">
+          Sistem Deteksi Objek
         </div>
-        <div class="col-lg-4 col-sm-12 pt-3">
-          <div class="text-center h1 mb-5">Object Detector</div>
-          <div class="loader"></div>
-          <div id="ready-to" style="display: none">
-            <button id="click-photo" class="btn btn-danger w-100 py-3 fw-bold">
-              Capture
-            </button>
-            <button id="tryagain-btn" style="display: none" class="btn btn-primary w-100 py-3 fw-bold">
-              Try Again
-            </button>
-            <label class="my-3">Or</label>
-            <label class="custom-file-upload">
-              <input id="file-upload" type="file" accept="image/*" />
-              <img
-                class="upload-icon"
-                src="https://huggingface.co/datasets/Xenova/transformers.js-docs/resolve/main/upload-icon.png"
-              />
-              Upload image
-            </label>
+        <div class="text-center text-gray fs-5">
+          Unggah gambar untuk menganalisis objek pada gambar
+        </div>
+      </div>
+      <div class="row g-5">
+        <div class="col-12 col-md-5">
+          <div class="card" style="border-radius: 20px">
+            <div class="card-body p-4">
+              <h5 class="card-title text-center">Hasil Deteksi</h5>
+              <hr />
+              <div class="card-text" style="height: 400px; overflow-y: auto">
+                <div class="loader"></div>
+                <div id="result"></div>
+                <div id="loading" class="text-center fs-5 text-gray mt-5">Harap Tunggu, Model sedang dimuat</div>
+              </div>
+            </div>
           </div>
-          <hr class="my-3">
-          <div class="h5">Sumary</div>
-          <div id="result"></div>
+        </div>
+        <div class="col-12 col-md-7">
+          <div class="card text-center" style="border-radius: 20px">
+            <div class="card-body p-4" style="min-height: 400px">
+              <div id="image-container"></div>
+
+              <div id="content-upload">
+                <input
+                  id="file-upload"
+                  type="file"
+                  accept="image/*"
+                  style="display: none"
+                />
+
+                <center class="mb-4">
+                  <div class="circle" id="upload-circle">
+                    <i class="fa-regular fa-image"></i>
+                  </div>
+                </center>
+
+                <p
+                  class="card-text text-gray fw-medium"
+                  style="font-size: 1.2rem"
+                >
+                  Tarik dan lepas gambar anda disini <br />
+                  atau klik untuk memilih file
+                </p>
+
+                <p
+                  class="card-text text-gray fw-medium"
+                  style="font-size: 1.2rem"
+                >
+                  Mendukung: JPG, PNG, GIF
+                </p>
+
+                <button
+                  class="btn btn-primary px-4 fw-medium mt-5"
+                  type="button"
+                  data-bs-toggle="modal"
+                  data-bs-target="#exampleModal"
+                  style="font-size: 1.1rem"
+                >
+                  <i class="fa-solid fa-camera me-2"></i> Gunakan Kamera
+                </button>
+              </div>
+            </div>
+          </div>
+          <button
+            id="tryagain-btn"
+            style="display: none"
+            class="btn btn-primary w-100 py-3 fw-bold mt-3"
+          >
+            Coba Lagi
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal -->
+      <div
+        class="modal fade"
+        id="exampleModal"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">
+                Foto Object Anda
+              </h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-12">
+                  <video id="video" width="100%" class="" autoplay></video>
+                  <div id="image-container"></div>
+                  <canvas
+                    id="canvas"
+                    height="200"
+                    style="display: none"
+                  ></canvas>
+                  <div id="loading" class="text-center">Loading model...</div>
+                </div>
+                <div class="col-12">
+                  <div class="loader"></div>
+                  <div id="ready-to" style="display: none">
+                    <button
+                      id="click-photo"
+                      class="btn btn-danger w-100 py-3 fw-bold"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    >
+                      Capture
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </main>
 
+    <script>
+      // Get the circle and file input elements
+      const circle = document.getElementById("upload-circle");
+      const fileInput = document.getElementById("file-upload");
+
+      // Add click event listener to the circle
+      circle.addEventListener("click", () => {
+        fileInput.click(); // Trigger the file input click
+      });
+
+      // Optional: Add a change event listener to handle the uploaded file
+      fileInput.addEventListener("change", (event) => {
+        const file = event.target.files[0];
+        if (file) {
+          console.log(`Selected file: ${file.name}`);
+        }
+      });
+    </script>
+
     <script src="./index.js" type="module"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+      integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+      crossorigin="anonymous"
+    ></script>
   </body>
 </html>

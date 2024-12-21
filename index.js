@@ -11,6 +11,8 @@ const fileUpload = document.getElementById("file-upload");
 const imageContainer = document.getElementById("image-container");
 
 let video = document.querySelector("#video");
+let contentUpload = document.querySelector("#content-upload");
+const resultDiv = document.getElementById("result");
 let click_button = document.querySelector("#click-photo");
 let tryagain_button = document.querySelector("#tryagain-btn");
 let canvas = document.querySelector("#canvas");
@@ -33,6 +35,7 @@ click_button.addEventListener("click", function () {
   let image_data_url = canvas.toDataURL("image/jpeg");
 
   video.style.display = "none";
+  contentUpload.style.display = "none";
 
   imageContainer.innerHTML = "";
   const image = document.createElement("img");
@@ -46,8 +49,9 @@ fileUpload.addEventListener("change", function (e) {
     if (!file) {
         return;
     }
-
+    resultDiv.innerHTML = "";
     video.style.display = "none";
+    contentUpload.style.display = "none";
 
     const reader = new FileReader();
 
@@ -63,48 +67,46 @@ fileUpload.addEventListener("change", function (e) {
 });
 
 // Detect objects in the image
-// Detect objects in the image
 async function detect(img) {
   click_button.textContent = "Analysing...";
   loader.style.display = "block";
   readyTo.style.display = "none";
 
   let output = await detector(img.src, {
-    threshold: 0.5,
-    percentage: true,
+      threshold: 0.5,
+      percentage: true,
   });
+
   tryagain_button.style.display = "block";
   click_button.style.display = "none";
-
   loader.style.display = "none";
   readyTo.style.display = "flex";
 
-  // Filter output to include only items with a score >= 0.8
   output = output.filter(out => out.score >= 0.8);
   console.log(output);
   output.forEach(renderBox);
 
-  // Create an object to count occurrences of each label
   const labelCounts = {};
-
   output.forEach(item => {
-    const label = item.label;
-    if (labelCounts[label]) {
-      labelCounts[label]++;
-    } else {
-      labelCounts[label] = 1;
-    }
+      const label = item.label;
+      labelCounts[label] = (labelCounts[label] || 0) + 1;
   });
 
-  // Display each label with its count in the #result div
-  const resultDiv = document.getElementById("result");
-  resultDiv.innerHTML = ""; // Clear previous results
+  resultDiv.innerHTML = "";
 
   for (const [label, count] of Object.entries(labelCounts)) {
-    const resultText = `${label}: ${count}`;
-    const div = document.createElement("div");
-    div.textContent = resultText;
-    resultDiv.appendChild(div);
+      const div = document.createElement("div");
+      div.className = "p-2 px-4 mb-2 mb-3";
+      div.style.cssText = "background-color: #E2E0FF; border-radius: 8px;";
+      div.innerHTML = `
+          <div class="text-primary fw-medium" style="font-size: 1.2rem">
+              ${label}
+          </div>
+          <div class="text-muted fw-medium" style="font-size: 1rem">
+              Total: ${count}
+          </div>
+      `;
+      resultDiv.appendChild(div);
   }
 }
 
@@ -142,6 +144,8 @@ function renderBox({ box, label, score}) {
 }
 
 tryagain_button.addEventListener("click", function () {
+  resultDiv.innerHTML = "";
+  contentUpload.style.display = "block";
   click_button.textContent = "Capture";
   click_button.disabled = false;
   click_button.style.display = "block";
