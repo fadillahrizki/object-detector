@@ -162,21 +162,11 @@
     </main>
 
     <script>
-      // Get the circle and file input elements
       const circle = document.getElementById("upload-circle");
       const fileInput = document.getElementById("file-upload");
 
-      // Add click event listener to the circle
       circle.addEventListener("click", () => {
-        fileInput.click(); // Trigger the file input click
-      });
-
-      // Optional: Add a change event listener to handle the uploaded file
-      fileInput.addEventListener("change", (event) => {
-        const file = event.target.files[0];
-        if (file) {
-          console.log(`Selected file: ${file.name}`);
-        }
+        fileInput.click();
       });
     </script>
 

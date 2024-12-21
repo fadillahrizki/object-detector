@@ -54,6 +54,7 @@ fileUpload.addEventListener("change", function (e) {
   resultDiv.innerHTML = "";
   video.style.display = "none";
   contentUpload.style.display = "none";
+  loader.style.display = "block";
 
   const reader = new FileReader();
 
@@ -157,6 +158,7 @@ tryagain_button.addEventListener("click", function () {
 });
 
 tryagain_button.addEventListener("click", function () {
+  fileUpload.value = "";
   resultDiv.innerHTML = "";
   contentUpload.style.display = "block";
   click_button.textContent = "Capture";
