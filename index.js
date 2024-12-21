@@ -13,6 +13,8 @@ const imageContainer = document.getElementById("image-container");
 let video = document.querySelector("#video");
 let contentUpload = document.querySelector("#content-upload");
 const resultDiv = document.getElementById("result");
+const modalOpenCam = document.querySelector("#opencam");
+const modalCloseCam = document.querySelector("#closecam");
 let click_button = document.querySelector("#click-photo");
 let tryagain_button = document.querySelector("#tryagain-btn");
 let canvas = document.querySelector("#canvas");
@@ -20,11 +22,11 @@ let loading = document.querySelector("#loading");
 let readyTo = document.querySelector("#ready-to");
 let loader = document.querySelector(".loader");
 
-let stream = await navigator.mediaDevices.getUserMedia({
-  video: true,
-  audio: false,
-});
-video.srcObject = stream;
+// let stream = await navigator.mediaDevices.getUserMedia({
+//   video: true,
+//   audio: false,
+// });
+// video.srcObject = stream;
 
 const detector = await pipeline("object-detection");
 readyTo.style.display = "flex";
@@ -45,25 +47,25 @@ click_button.addEventListener("click", function () {
 });
 
 fileUpload.addEventListener("change", function (e) {
-    const file = e.target.files[0];
-    if (!file) {
-        return;
-    }
-    resultDiv.innerHTML = "";
-    video.style.display = "none";
-    contentUpload.style.display = "none";
+  const file = e.target.files[0];
+  if (!file) {
+    return;
+  }
+  resultDiv.innerHTML = "";
+  video.style.display = "none";
+  contentUpload.style.display = "none";
 
-    const reader = new FileReader();
+  const reader = new FileReader();
 
-    // Set up a callback when the file is loaded
-    reader.onload = function (e2) {
-        imageContainer.innerHTML = '';
-        const image = document.createElement('img');
-        image.src = e2.target.result;
-        imageContainer.appendChild(image);
-        detect(image);
-    };
-    reader.readAsDataURL(file);
+  // Set up a callback when the file is loaded
+  reader.onload = function (e2) {
+    imageContainer.innerHTML = "";
+    const image = document.createElement("img");
+    image.src = e2.target.result;
+    imageContainer.appendChild(image);
+    detect(image);
+  };
+  reader.readAsDataURL(file);
 });
 
 // Detect objects in the image
@@ -73,8 +75,8 @@ async function detect(img) {
   readyTo.style.display = "none";
 
   let output = await detector(img.src, {
-      threshold: 0.5,
-      percentage: true,
+    threshold: 0.5,
+    percentage: true,
   });
 
   tryagain_button.style.display = "block";
@@ -82,23 +84,23 @@ async function detect(img) {
   loader.style.display = "none";
   readyTo.style.display = "flex";
 
-  output = output.filter(out => out.score >= 0.8);
+  output = output.filter((out) => out.score >= 0.8);
   console.log(output);
   output.forEach(renderBox);
 
   const labelCounts = {};
-  output.forEach(item => {
-      const label = item.label;
-      labelCounts[label] = (labelCounts[label] || 0) + 1;
+  output.forEach((item) => {
+    const label = item.label;
+    labelCounts[label] = (labelCounts[label] || 0) + 1;
   });
 
   resultDiv.innerHTML = "";
 
   for (const [label, count] of Object.entries(labelCounts)) {
-      const div = document.createElement("div");
-      div.className = "p-2 px-4 mb-2 mb-3";
-      div.style.cssText = "background-color: #E2E0FF; border-radius: 8px;";
-      div.innerHTML = `
+    const div = document.createElement("div");
+    div.className = "p-2 px-4 mb-2 mb-3";
+    div.style.cssText = "background-color: #E2E0FF; border-radius: 8px;";
+    div.innerHTML = `
           <div class="text-primary fw-medium" style="font-size: 1.2rem">
               ${label}
           </div>
@@ -106,13 +108,12 @@ async function detect(img) {
               Total: ${count}
           </div>
       `;
-      resultDiv.appendChild(div);
+    resultDiv.appendChild(div);
   }
 }
 
-
 // Render a bounding box and label on the image
-function renderBox({ box, label, score}) {
+function renderBox({ box, label, score }) {
   const { xmax, xmin, ymax, ymin } = box;
 
   // Generate a random color for the box
@@ -135,7 +136,7 @@ function renderBox({ box, label, score}) {
 
   // Draw label
   const labelElement = document.createElement("span");
-  labelElement.textContent = label + ` (${(score*100).toFixed(2)}%)`;
+  labelElement.textContent = label + ` (${(score * 100).toFixed(2)}%)`;
   labelElement.className = "bounding-box-label";
   labelElement.style.backgroundColor = color;
 
@@ -153,4 +154,36 @@ tryagain_button.addEventListener("click", function () {
   imageContainer.innerHTML = "";
 
   video.style.display = "block";
+});
+
+tryagain_button.addEventListener("click", function () {
+  resultDiv.innerHTML = "";
+  contentUpload.style.display = "block";
+  click_button.textContent = "Capture";
+  click_button.disabled = false;
+  click_button.style.display = "block";
+  tryagain_button.style.display = "none";
+  imageContainer.innerHTML = "";
+
+  video.style.display = "block";
+});
+
+modalOpenCam.addEventListener("click", async function () {
+  // Membuka kamera
+  let stream = await navigator.mediaDevices.getUserMedia({
+    video: true,
+    audio: false,
+  });
+  video.srcObject = stream;
+
+  modalCloseCam.addEventListener("click", function () {
+    let tracks = stream.getTracks();
+    tracks.forEach((track) => track.stop());
+    video.srcObject = null;
+  });
+  click_button.addEventListener("click", function () {
+    let tracks = stream.getTracks();
+    tracks.forEach((track) => track.stop());
+    video.srcObject = null;
+  });
 });

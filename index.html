@@ -37,10 +37,15 @@
             <div class="card-body p-4">
               <h5 class="card-title text-center">Hasil Deteksi</h5>
               <hr />
-              <div class="card-text" style="height: 400px; overflow-y: auto">
+              <div
+                class="card-text"
+                style="height: 400px; overflow-y: auto; padding-right: 10px"
+              >
                 <div class="loader"></div>
                 <div id="result"></div>
-                <div id="loading" class="text-center fs-5 text-gray mt-5">Harap Tunggu, Model sedang dimuat</div>
+                <div id="loading" class="text-center fs-5 text-gray mt-5">
+                  Harap Tunggu, Model sedang dimuat
+                </div>
               </div>
             </div>
           </div>
@@ -85,6 +90,7 @@
                   data-bs-toggle="modal"
                   data-bs-target="#exampleModal"
                   style="font-size: 1.1rem"
+                  id="opencam"
                 >
                   <i class="fa-solid fa-camera me-2"></i> Gunakan Kamera
                 </button>
@@ -106,6 +112,7 @@
         class="modal fade"
         id="exampleModal"
         tabindex="-1"
+        data-bs-backdrop="static"
         aria-labelledby="exampleModalLabel"
         aria-hidden="true"
       >
@@ -120,6 +127,7 @@
                 class="btn-close"
                 data-bs-dismiss="modal"
                 aria-label="Close"
+                id="closecam"
               ></button>
             </div>
             <div class="modal-body">
@@ -132,14 +140,13 @@
                     height="200"
                     style="display: none"
                   ></canvas>
-                  <div id="loading" class="text-center">Loading model...</div>
                 </div>
                 <div class="col-12">
                   <div class="loader"></div>
                   <div id="ready-to" style="display: none">
                     <button
                       id="click-photo"
-                      class="btn btn-danger w-100 py-3 fw-bold"
+                      class="btn btn-primary w-100 py-3 fw-bold"
                       data-bs-dismiss="modal"
                       aria-label="Close"
                     >

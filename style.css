@@ -107,3 +107,29 @@ button {
 text-primary {
   color: #5353d8 !important;
 }
+
+.card-text {
+    scrollbar-width: thin;
+    scrollbar-color: #5353d8 #f8f9fa; /* warna scroll bar */
+  }
+
+  /* Chrome, Safari, Edge */
+  .card-text::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .card-text::-webkit-scrollbar-thumb {
+    background-color: #E2E0FF;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+  }
+
+  .card-text::-webkit-scrollbar-track {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+  }
+
+  /* Efek hover pada scrollbar */
+  .card-text::-webkit-scrollbar-thumb:hover {
+    background-color: #495057;
+  }
